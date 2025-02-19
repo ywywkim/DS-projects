@@ -1,0 +1,179 @@
+---
+title: "ML1_FinalProject"
+output: html_document
+author: "Yunwon Kim"
+---
+
+```{r, message=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(readxl)
+library(caret)
+library(ROSE)
+library(car)
+library(ROCR)
+```
+
+```{r}
+emp <- read_xlsx("Employee_Data_Project.xlsx")
+```
+
+```{r}
+table(emp$Attrition)
+```
+#### Data Cleaning
+
+```{r}
+emp <- emp %>% mutate(Attrition01 = ifelse(Attrition == "Yes", 1,
+                                     ifelse(Attrition == "No", 0, 0)))
+emp <- emp %>%
+mutate(Income = case_when(Income>=66000 & Income <=95000~ "Average",
+Income > 96000 ~ "Above Average",
+TRUE ~ "Below Average"))
+```
+
+```{r}
+#remove NA's
+emp <- emp %>% subset(NumCompaniesWorked != "NA"& TotalWorkingYears != "NA"&
+                      EnvironmentSatisfaction != "NA"& 
+                      JobSatisfaction != "NA")
+emp$NumCompaniesWorked <- as.numeric(emp$NumCompaniesWorked)
+emp$TotalWorkingYears <- as.numeric(emp$TotalWorkingYears)
+emp$EnvironmentSatisfaction <- as.numeric(emp$EnvironmentSatisfaction)
+emp$JobSatisfaction <- as.numeric(emp$JobSatisfaction)
+emp$BusinessTravel <- as.factor(emp$BusinessTravel)
+emp$Gender <- as.factor(emp$Gender)
+emp$MaritalStatus <- as.factor(emp$MaritalStatus)
+emp$JobLevel <- as.factor(emp$JobLevel)
+emp$JobSatisfaction <- as.factor(emp$JobSatisfaction)
+emp$EnvironmentSatisfaction <- as.factor(emp$EnvironmentSatisfaction)
+emp$Attrition <- as.factor(emp$Attrition)
+emp$Attrition01 <- as.factor(emp$Attrition01)
+emp$Income <- as.factor(emp$Income)
+```
+
+#### Data Partition 
+
+```{r}
+set.seed(123)
+
+index <- createDataPartition(emp$Attrition01, p=0.7, list=FALSE)
+train <- emp[index,]
+test <- emp[-index,]
+```
+
+
+```{r}
+#check for missing values
+sum(is.na(train))
+```
+
+#### Bagging
+
+- Alex is doing this part.
+
+
+
+
+
+
+```{r, message=FALSE}
+library(randomForest)
+
+#Clean Data
+train_clean <- train %>% select(Attrition01,Age,BusinessTravel,DistanceFromHome ,Education,Gender,JobLevel,MaritalStatus,Income,NumCompaniesWorked ,StandardHours,TotalWorkingYears,TrainingTimesLastYear,YearsAtCompany ,YearsWithCurrManager,EnvironmentSatisfaction,JobSatisfaction)
+
+test_clean <- test %>% select(Attrition01,Age,BusinessTravel,DistanceFromHome ,Education,Gender,JobLevel,MaritalStatus,Income,NumCompaniesWorked ,StandardHours,TotalWorkingYears,TrainingTimesLastYear,YearsAtCompany ,YearsWithCurrManager,EnvironmentSatisfaction,JobSatisfaction)
+```
+
+```{r}
+under_train <- ovun.sample(Attrition01 ~Age+BusinessTravel+DistanceFromHome +Education+Gender+JobLevel+MaritalStatus+Income+NumCompaniesWorked +StandardHours+TotalWorkingYears+TrainingTimesLastYear+YearsAtCompany +YearsWithCurrManager+EnvironmentSatisfaction+JobSatisfaction, 
+                     data = train_clean,
+                     method = "under", N = 1000)$data
+table(under_train$Attrition)
+```
+
+
+
+#### Random Forest
+
+```{r}
+set.seed(123)
+rf.tree.attrition <- randomForest(Attrition01~Age+BusinessTravel+DistanceFromHome+Education+Gender+JobLevel+MaritalStatus+Income+NumCompaniesWorked +StandardHours+TotalWorkingYears+TrainingTimesLastYear+YearsAtCompany +YearsWithCurrManager+EnvironmentSatisfaction+JobSatisfaction, data=under_train, ntree=500)
+rf.tree.attrition
+```
+
+```{r}
+plot(rf.tree.attrition)
+```
+
+- For the plot above, the black line corresponds to out of bag error, the green line is the error for class 1, meaning error for Attrition=Yes, and the red line is the error for class 0, meaning error for Attrition=No.
+
+
+- Model Tuning
+
+
+```{r}
+#Finding out the number of trees that minimizes the error
+set.seed(123)
+ntrees <- which.min(rf.tree.attrition$err.rate[,1])
+rf.tree.attrition <- randomForest(Attrition01~Age+BusinessTravel+DistanceFromHome +Education+Gender+JobLevel+MaritalStatus+Income+NumCompaniesWorked +StandardHours+TotalWorkingYears+TrainingTimesLastYear+YearsAtCompany +YearsWithCurrManager+EnvironmentSatisfaction+JobSatisfaction, data=under_train, ntree=ntrees)
+rf.tree.attrition
+```
+
+
+
+```{r}
+rf.trees.predict <- predict(rf.tree.attrition, newdata=test_clean,
+type="class")
+confusionMatrix(rf.trees.predict, test_clean$Attrition01, positive="1")
+```
+
+- The above output is our final result for random forest. Accuracy = 0.9685, etc.. Let me know if you need help with interpretating or understanding the result.
+
+
+
+```{r}
+require(ROCR)
+tree.attrition.predict2 <- predict(rf.tree.attrition, test_clean,
+type="prob")
+predROC <- prediction(tree.attrition.predict2[,2],
+test_clean$Attrition01)
+perfROC <- performance(predROC, "tpr", "fpr")
+plot(perfROC)
+abline(a=0, b=1)
+#Calculate the area under the curve
+perfROC <- performance(predROC, "auc")
+perfROC@y.values[[1]]
+
+```
+
+```{r}
+varImp(rf.tree.attrition)%>% arrange(desc(Overall))
+```
+
+```{r}
+varImpPlot(rf.tree.attrition)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
