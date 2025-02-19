@@ -1,0 +1,93 @@
+Simulated Durations,"[0.5, 1, 2, 4]"
+Simulated Round Trip Efficiency,0.85
+Simulated Annual Cycle Limit,360
+Simulated Timesteps,8760
+Simulated Lookahead Horizon,8760
+Simulated Rolling Horizon,8760
+Simulated Timesteps per Hour,1
+Simulated Ancillary Services,"['reg_up', 'reg_down', 'rrs', 'ecrs', 'non_spin']"
+Net Revenue 2021_0.5 ($/a),1828405.9233865505
+Energy Profit 2021_0.5 ($/a),3043.060407070662
+REG_UP Revenue 2021_0.5 Revenue ($/a),358506.48860896117
+REG_DOWN Revenue 2021_0.5 Revenue ($/a),209298.2975
+RRS Revenue 2021_0.5 Revenue ($/a),1256944.1269864617
+ECRS Revenue 2021_0.5 Revenue ($/a),0.0
+NON_SPIN Revenue 2021_0.5 Revenue ($/a),613.9498840912876
+Net Revenue 2021_1 ($/a),2061021.175214235
+Energy Profit 2021_1 ($/a),-1547.0879972647715
+REG_UP Revenue 2021_1 Revenue ($/a),492521.190556135
+REG_DOWN Revenue 2021_1 Revenue ($/a),209294.52052618942
+RRS Revenue 2021_1 Revenue ($/a),1260624.6356087255
+ECRS Revenue 2021_1 Revenue ($/a),0.0
+NON_SPIN Revenue 2021_1 Revenue ($/a),100127.91652050069
+Net Revenue 2021_2 ($/a),2229191.7404623223
+Energy Profit 2021_2 ($/a),-950.9851699817632
+REG_UP Revenue 2021_2 Revenue ($/a),489254.2430086455
+REG_DOWN Revenue 2021_2 Revenue ($/a),208876.66878415563
+RRS Revenue 2021_2 Revenue ($/a),1259470.5457702917
+ECRS Revenue 2021_2 Revenue ($/a),0.0
+NON_SPIN Revenue 2021_2 Revenue ($/a),272541.26806921186
+Net Revenue 2021_4 ($/a),2242711.145850124
+Energy Profit 2021_4 ($/a),17306.948097376306
+REG_UP Revenue 2021_4 Revenue ($/a),486887.6581452267
+REG_DOWN Revenue 2021_4 Revenue ($/a),207720.204170332
+RRS Revenue 2021_4 Revenue ($/a),1249181.3380751607
+ECRS Revenue 2021_4 Revenue ($/a),0.0
+NON_SPIN Revenue 2021_4 Revenue ($/a),281614.99736203713
+Net Revenue 2022_0.5 ($/a),140369.59326818836
+Energy Profit 2022_0.5 ($/a),11303.647249887023
+REG_UP Revenue 2022_0.5 Revenue ($/a),34739.09682417319
+REG_DOWN Revenue 2022_0.5 Revenue ($/a),18522.81
+RRS Revenue 2022_0.5 Revenue ($/a),73817.01729868443
+ECRS Revenue 2022_0.5 Revenue ($/a),0.0
+NON_SPIN Revenue 2022_0.5 Revenue ($/a),1987.0218954438933
+Net Revenue 2022_1 ($/a),175394.0465758081
+Energy Profit 2022_1 ($/a),21711.426359082827
+REG_UP Revenue 2022_1 Revenue ($/a),41856.17438299065
+REG_DOWN Revenue 2022_1 Revenue ($/a),18512.05295140203
+RRS Revenue 2022_1 Revenue ($/a),77952.64968401892
+ECRS Revenue 2022_1 Revenue ($/a),0.0
+NON_SPIN Revenue 2022_1 Revenue ($/a),15361.743198313208
+Net Revenue 2022_2 ($/a),207661.0883504835
+Energy Profit 2022_2 ($/a),32802.68988266505
+REG_UP Revenue 2022_2 Revenue ($/a),39009.87464599828
+REG_DOWN Revenue 2022_2 Revenue ($/a),17929.439371982815
+RRS Revenue 2022_2 Revenue ($/a),68281.92970341395
+ECRS Revenue 2022_2 Revenue ($/a),0.0
+NON_SPIN Revenue 2022_2 Revenue ($/a),49637.154746427506
+Net Revenue 2022_4 ($/a),225402.03417678538
+Energy Profit 2022_4 ($/a),67688.65213976025
+REG_UP Revenue 2022_4 Revenue ($/a),35406.93857987416
+REG_DOWN Revenue 2022_4 Revenue ($/a),17208.862934660097
+RRS Revenue 2022_4 Revenue ($/a),44227.43563804525
+ECRS Revenue 2022_4 Revenue ($/a),0.0
+NON_SPIN Revenue 2022_4 Revenue ($/a),60870.14488445142
+Net Revenue 2023_0.5 ($/a),194815.1454045347
+Energy Profit 2023_0.5 ($/a),27204.58911211021
+REG_UP Revenue 2023_0.5 Revenue ($/a),43808.81669986842
+REG_DOWN Revenue 2023_0.5 Revenue ($/a),29850.387499999993
+RRS Revenue 2023_0.5 Revenue ($/a),65644.4852767834
+ECRS Revenue 2023_0.5 Revenue ($/a),27238.547842167343
+NON_SPIN Revenue 2023_0.5 Revenue ($/a),1068.3189736104468
+Net Revenue 2023_1 ($/a),266142.843568486
+Energy Profit 2023_1 ($/a),42769.662185986024
+REG_UP Revenue 2023_1 Revenue ($/a),47164.94184417802
+REG_DOWN Revenue 2023_1 Revenue ($/a),29841.723926393814
+RRS Revenue 2023_1 Revenue ($/a),64234.5108990385
+ECRS Revenue 2023_1 Revenue ($/a),78500.36508449787
+NON_SPIN Revenue 2023_1 Revenue ($/a),3631.6396284002535
+Net Revenue 2023_2 ($/a),312161.35820978537
+Energy Profit 2023_2 ($/a),72118.43962145875
+REG_UP Revenue 2023_2 Revenue ($/a),44210.81399019933
+REG_DOWN Revenue 2023_2 Revenue ($/a),29364.148951970958
+RRS Revenue 2023_2 Revenue ($/a),40671.71209429917
+ECRS Revenue 2023_2 Revenue ($/a),109408.76279310031
+NON_SPIN Revenue 2023_2 Revenue ($/a),16387.48075876587
+Net Revenue 2023_4 ($/a),334382.4921409335
+Energy Profit 2023_4 ($/a),120255.48840403564
+REG_UP Revenue 2023_4 Revenue ($/a),34366.57205783617
+REG_DOWN Revenue 2023_4 Revenue ($/a),28648.868499490763
+RRS Revenue 2023_4 Revenue ($/a),23830.42127344805
+ECRS Revenue 2023_4 Revenue ($/a),109468.36246129805
+NON_SPIN Revenue 2023_4 Revenue ($/a),17812.779444835367
+Minutes_elapsed,3.28

@@ -1,0 +1,45 @@
+Simulated Durations,"[0.5, 1, 2, 4]"
+Simulated Round Trip Efficiency,0.85
+Simulated Annual Cycle Limit,360
+Simulated Timesteps,35136
+Simulated Lookahead Horizon,8784
+Simulated Rolling Horizon,8784
+Simulated Timesteps per Hour,4
+Simulated Ancillary Services,"['aFRR_Up', 'aFRR_Down', 'FCR']"
+Net Revenue 2022_0.5 (€/a),170994.9215408392
+Energy Profit 2022_0.5 (€/a),41158.98396040972
+Ancillary Services 2022_0.5 (€/a),129835.9375804385
+Net Revenue 2022_1 (€/a),202117.95096929529
+Energy Profit 2022_1 (€/a),73710.12420483472
+Ancillary Services 2022_1 (€/a),128407.82676447157
+Net Revenue 2022_2 (€/a),252256.89583321943
+Energy Profit 2022_2 (€/a),127604.19208408784
+Ancillary Services 2022_2 (€/a),124652.70374913819
+Net Revenue 2022_4 (€/a),322482.9505645588
+Energy Profit 2022_4 (€/a),208933.6395426567
+Ancillary Services 2022_4 (€/a),113549.31102189122
+Net Revenue 2023_0.5 (€/a),172809.8573991251
+Energy Profit 2023_0.5 (€/a),41015.60788860975
+Ancillary Services 2023_0.5 (€/a),131794.24951051146
+Net Revenue 2023_1 (€/a),197985.9592458374
+Energy Profit 2023_1 (€/a),66884.25283536995
+Ancillary Services 2023_1 (€/a),131101.70641047144
+Net Revenue 2023_2 (€/a),232721.67699137173
+Energy Profit 2023_2 (€/a),103718.40579961675
+Ancillary Services 2023_2 (€/a),129003.27119176471
+Net Revenue 2023_4 (€/a),278426.3258092381
+Energy Profit 2023_4 (€/a),156111.36619016976
+Ancillary Services 2023_4 (€/a),122314.95961908385
+Net Revenue 2024_0.5 (€/a),133909.1703111562
+Energy Profit 2024_0.5 (€/a),28153.107481817548
+Ancillary Services 2024_0.5 (€/a),105756.06282934366
+Net Revenue 2024_1 (€/a),153248.73290205392
+Energy Profit 2024_1 (€/a),48384.65572177331
+Ancillary Services 2024_1 (€/a),104864.0771802868
+Net Revenue 2024_2 (€/a),183997.7116105632
+Energy Profit 2024_2 (€/a),81680.76074992651
+Ancillary Services 2024_2 (€/a),102316.95086064437
+Net Revenue 2024_4 (€/a),225567.18941214308
+Energy Profit 2024_4 (€/a),131849.9752371953
+Ancillary Services 2024_4 (€/a),93717.21417495291
+Minutes_elapsed,8.2

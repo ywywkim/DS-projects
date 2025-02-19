@@ -1,0 +1,81 @@
+Simulated Durations,"[0.5, 1, 2, 4]"
+Simulated Round Trip Efficiency,0.85
+Simulated Annual Cycle Limit,360
+Simulated Timesteps,8760
+Simulated Lookahead Horizon,8760
+Simulated Rolling Horizon,8760
+Simulated Timesteps per Hour,1
+Simulated Ancillary Services,"['spin', 'reg_up', 'reg_down', 'non_spin']"
+Net Revenue 2021_0.5 ($/a),54401.08424716961
+Energy Profit 2021_0.5 ($/a),9103.994873937037
+SPIN Revenue 2021_0.5 Revenue ($/a),12508.247993616833
+REG_UP Revenue 2021_0.5 Revenue ($/a),12193.039324909016
+REG_DOWN Revenue 2021_0.5 Revenue ($/a),20594.90437667088
+NON_SPIN Revenue 2021_0.5 Revenue ($/a),0.8976780364372591
+Net Revenue 2021_1 ($/a),65135.10163480626
+Energy Profit 2021_1 ($/a),16362.188006592358
+SPIN Revenue 2021_1 Revenue ($/a),14999.11100062332
+REG_UP Revenue 2021_1 Revenue ($/a),12657.002743792193
+REG_DOWN Revenue 2021_1 Revenue ($/a),20507.99976986269
+NON_SPIN Revenue 2021_1 Revenue ($/a),608.8001139376946
+Net Revenue 2021_2 ($/a),78750.43873026312
+Energy Profit 2021_2 ($/a),31670.34935040963
+SPIN Revenue 2021_2 Revenue ($/a),12668.53241541904
+REG_UP Revenue 2021_2 Revenue ($/a),12334.94285722706
+REG_DOWN Revenue 2021_2 Revenue ($/a),20350.931530834707
+NON_SPIN Revenue 2021_2 Revenue ($/a),1725.6825763752581
+Net Revenue 2021_4 ($/a),99366.23486322523
+Energy Profit 2021_4 ($/a),58490.7431589243
+SPIN Revenue 2021_4 Revenue ($/a),8103.716577487308
+REG_UP Revenue 2021_4 Revenue ($/a),10726.07464988018
+REG_DOWN Revenue 2021_4 Revenue ($/a),20237.255330250944
+NON_SPIN Revenue 2021_4 Revenue ($/a),1808.4451466847308
+Net Revenue 2022_0.5 ($/a),65594.1764426107
+Energy Profit 2022_0.5 ($/a),12439.894140349837
+SPIN Revenue 2022_0.5 Revenue ($/a),20410.869978772032
+REG_UP Revenue 2022_0.5 Revenue ($/a),14313.05512620644
+REG_DOWN Revenue 2022_0.5 Revenue ($/a),18429.28958713646
+NON_SPIN Revenue 2022_0.5 Revenue ($/a),1.067610145942381
+Net Revenue 2022_1 ($/a),80986.63945100734
+Energy Profit 2022_1 ($/a),22906.524164180606
+SPIN Revenue 2022_1 Revenue ($/a),22812.52166804166
+REG_UP Revenue 2022_1 Revenue ($/a),15692.088346086824
+REG_DOWN Revenue 2022_1 Revenue ($/a),18350.59925126892
+NON_SPIN Revenue 2022_1 Revenue ($/a),1224.9060214304989
+Net Revenue 2022_2 ($/a),100034.78658924835
+Energy Profit 2022_2 ($/a),41560.78446155702
+SPIN Revenue 2022_2 Revenue ($/a),20859.39215425197
+REG_UP Revenue 2022_2 Revenue ($/a),15362.317193018262
+REG_DOWN Revenue 2022_2 Revenue ($/a),18033.546712667405
+NON_SPIN Revenue 2022_2 Revenue ($/a),4218.746067754338
+Net Revenue 2022_4 ($/a),129402.73426542513
+Energy Profit 2022_4 ($/a),78283.3220926118
+SPIN Revenue 2022_4 Revenue ($/a),14067.956257493957
+REG_UP Revenue 2022_4 Revenue ($/a),13254.77406776658
+REG_DOWN Revenue 2022_4 Revenue ($/a),17663.79566862938
+NON_SPIN Revenue 2022_4 Revenue ($/a),6132.886178925473
+Net Revenue 2023_0.5 ($/a),45958.72290728076
+Energy Profit 2023_0.5 ($/a),12026.569563546256
+SPIN Revenue 2023_0.5 Revenue ($/a),9805.573050895699
+REG_UP Revenue 2023_0.5 Revenue ($/a),9521.341374861584
+REG_DOWN Revenue 2023_0.5 Revenue ($/a),14602.892394300403
+NON_SPIN Revenue 2023_0.5 Revenue ($/a),2.3465236771574016
+Net Revenue 2023_1 ($/a),58622.27117983286
+Energy Profit 2023_1 ($/a),22265.059724577284
+SPIN Revenue 2023_1 Revenue ($/a),10923.903598378129
+REG_UP Revenue 2023_1 Revenue ($/a),10101.274192459423
+REG_DOWN Revenue 2023_1 Revenue ($/a),14530.445378661718
+NON_SPIN Revenue 2023_1 Revenue ($/a),801.5882857559742
+Net Revenue 2023_2 ($/a),78736.15033423096
+Energy Profit 2023_2 ($/a),44719.89613712006
+SPIN Revenue 2023_2 Revenue ($/a),8470.273562605793
+REG_UP Revenue 2023_2 Revenue ($/a),9483.731993429807
+REG_DOWN Revenue 2023_2 Revenue ($/a),14371.82091382205
+NON_SPIN Revenue 2023_2 Revenue ($/a),1690.4277272534869
+Net Revenue 2023_4 ($/a),111077.97056584441
+Energy Profit 2023_4 ($/a),82388.26228448492
+SPIN Revenue 2023_4 Revenue ($/a),4898.9327646809625
+REG_UP Revenue 2023_4 Revenue ($/a),7880.386470028138
+REG_DOWN Revenue 2023_4 Revenue ($/a),14038.037000070557
+NON_SPIN Revenue 2023_4 Revenue ($/a),1872.3520465798783
+Minutes_elapsed,3.19

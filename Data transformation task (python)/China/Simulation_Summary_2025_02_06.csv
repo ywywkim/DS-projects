@@ -1,0 +1,33 @@
+Simulated Durations,"[0.5, 1, 2, 4]"
+Simulated Round Trip Efficiency,0.85
+Simulated Annual Cycle Limit,360
+Simulated Timesteps,8760
+Simulated Lookahead Horizon,8760
+Simulated Rolling Horizon,8760
+Simulated Timesteps per Hour,1
+Simulated Ancillary Services,[]
+Net Revenue 2022_0.5 (¥/a),87316.22560545431
+Energy Profit 2022_0.5 (¥/a),87316.22560545431
+Net Revenue 2022_1 (¥/a),174632.45121090862
+Energy Profit 2022_1 (¥/a),174632.45121090862
+Net Revenue 2022_2 (¥/a),322504.3723617723
+Energy Profit 2022_2 (¥/a),322504.3723617723
+Net Revenue 2022_4 (¥/a),564384.1399492499
+Energy Profit 2022_4 (¥/a),564384.1399492499
+Net Revenue 2023_0.5 (¥/a),70400.23603867779
+Energy Profit 2023_0.5 (¥/a),70400.23603867779
+Net Revenue 2023_1 (¥/a),140800.4720773556
+Energy Profit 2023_1 (¥/a),140800.4720773556
+Net Revenue 2023_2 (¥/a),262070.28171254933
+Energy Profit 2023_2 (¥/a),262070.28171254933
+Net Revenue 2023_4 (¥/a),459770.6293925185
+Energy Profit 2023_4 (¥/a),459770.6293925185
+Net Revenue 2024_0.5 (¥/a),63901.32445239482
+Energy Profit 2024_0.5 (¥/a),63901.32445239482
+Net Revenue 2024_1 (¥/a),127802.64890478969
+Energy Profit 2024_1 (¥/a),127802.64890478969
+Net Revenue 2024_2 (¥/a),241297.1056161551
+Energy Profit 2024_2 (¥/a),241297.1056161551
+Net Revenue 2024_4 (¥/a),437567.1690521905
+Energy Profit 2024_4 (¥/a),437567.1690521905
+Minutes_elapsed,1.07

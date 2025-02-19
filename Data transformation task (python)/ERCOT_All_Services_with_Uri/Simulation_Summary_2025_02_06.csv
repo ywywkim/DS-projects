@@ -1,0 +1,37 @@
+Simulated Durations,"[0.5, 1, 2, 4]"
+Simulated Round Trip Efficiency,0.85
+Simulated Annual Cycle Limit,360
+Simulated Timesteps,8784
+Simulated Lookahead Horizon,8784
+Simulated Rolling Horizon,8784
+Simulated Timesteps per Hour,1
+Simulated Ancillary Services,"['reg_up', 'reg_down', 'rrs', 'ecrs', 'non_spin']"
+Net Revenue 2024_0.5 ($/a),36163.367840832165
+Energy Profit 2024_0.5 ($/a),11435.277250651972
+REG_UP Revenue 2024_0.5 Revenue ($/a),2410.0337955199193
+REG_DOWN Revenue 2024_0.5 Revenue ($/a),1506.382424863388
+RRS Revenue 2024_0.5 Revenue ($/a),16352.509479148304
+ECRS Revenue 2024_0.5 Revenue ($/a),4270.4404852680755
+NON_SPIN Revenue 2024_0.5 Revenue ($/a),188.7244053811533
+Net Revenue 2024_1 ($/a),59729.783370461264
+Energy Profit 2024_1 ($/a),22588.308703613042
+REG_UP Revenue 2024_1 Revenue ($/a),2257.9559539853262
+REG_DOWN Revenue 2024_1 Revenue ($/a),1505.6140500717595
+RRS Revenue 2024_1 Revenue ($/a),16275.40948837423
+ECRS Revenue 2024_1 Revenue ($/a),16569.476916928725
+NON_SPIN Revenue 2024_1 Revenue ($/a),533.018257491302
+Net Revenue 2024_2 ($/a),86119.78514792319
+Energy Profit 2024_2 ($/a),38142.893781106475
+REG_UP Revenue 2024_2 Revenue ($/a),1566.0621704392493
+REG_DOWN Revenue 2024_2 Revenue ($/a),1498.6669714813654
+RRS Revenue 2024_2 Revenue ($/a),13949.41163283797
+ECRS Revenue 2024_2 Revenue ($/a),25982.030271020696
+NON_SPIN Revenue 2024_2 Revenue ($/a),4980.720321033541
+Net Revenue 2024_4 ($/a),104160.3092507069
+Energy Profit 2024_4 ($/a),57994.81753066886
+REG_UP Revenue 2024_4 Revenue ($/a),1042.8382729523098
+REG_DOWN Revenue 2024_4 Revenue ($/a),1473.490400999598
+RRS Revenue 2024_4 Revenue ($/a),10074.057083890206
+ECRS Revenue 2024_4 Revenue ($/a),22594.83335032681
+NON_SPIN Revenue 2024_4 Revenue ($/a),10980.272611861554
+Minutes_elapsed,0.65
