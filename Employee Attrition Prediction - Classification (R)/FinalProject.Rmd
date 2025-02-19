@@ -68,14 +68,6 @@ test <- emp[-index,]
 sum(is.na(train))
 ```
 
-#### Bagging
-
-- Alex is doing this part.
-
-
-
-
-
 
 ```{r, message=FALSE}
 library(randomForest)
