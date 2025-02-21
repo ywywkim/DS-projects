@@ -50,7 +50,7 @@ def main():
     
     # getting the input data from the user
     if st.button('Predicted Medical Insurance Cost: '):
-        diagnosis = medical_insurance_cost_prediction([age,sex,bmi,children,smoker,region])
+        diagnosis = cost_prediction([age,sex,bmi,children,smoker,region])
         
     st.success(diagnosis)
     
