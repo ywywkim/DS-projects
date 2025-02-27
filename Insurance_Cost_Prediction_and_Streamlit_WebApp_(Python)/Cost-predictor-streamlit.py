@@ -5,11 +5,15 @@ import numpy as np
 import pickle
 import streamlit as st
 import warnings
+import os
 
 warnings.filterwarnings("ignore")
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+model_path = os.path.join(current_dir, 'medical_insurance_cost_predictor.sav')
+
 # Load the trained model
-model = pickle.load(open('medical_insurance_cost_predictor.sav', 'rb'))
+model = pickle.load(open(model_path, 'rb'))
 
 # Function to make predictions
 def cost_prediction(input_data):
