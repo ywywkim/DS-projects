@@ -1,0 +1,545 @@
+---
+title: "Capstone EDA"
+author: "Yunwon Kim"
+date: '2022-06-13'
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+
+
+```{r}
+setwd("D:/MSBA/Capstone")
+df <- read.csv("NRI_Table_Counties Clean.csv")
+def <- read.csv("NRIDataDictionaryClean.csv")
+```
+
+
+### Data Cleaning
+
+#### Check for Missing Values
+
+```{r}
+#In case you have NA character values, first run
+
+df[df=='NA'] <- NA
+
+# Find NA's for each column
+colSums(is.na(df))
+```
+
+```{r}
+# Replace columns with 0 where NA > 2K
+df_nalarge <- df %>% select(where(~ sum(is.na(.))> 2000))
+df_nalarge1 <- df_nalarge %>% 
+ mutate_all(~replace(., is.na(.), 0))
+df_nalarge1
+```
+
+```{r}
+# Replace columns with median where NA < 2K
+df_nasmall <- df %>% select(where(~ sum(is.na(.))< 2000 & 
+                                    sum(is.na(.))> 0))
+df_nasmall
+df_nasmall1 <- df_nasmall %>% mutate_if(is.numeric, function(x) ifelse(is.na(x), median(x, na.rm = T), x))
+df_nasmall1
+```
+
+```{r}
+# Now that we have two subsets, we can remove all cols with NA & cbind the 2 subsets for complete data
+# Remove columns where contains NA
+
+df <- df[, colSums(is.na(df))==0]
+
+```
+
+```{r}
+# Cbind two subsets
+df <- cbind(df, df_nalarge1, df_nasmall1)
+df
+```
+
+```{r}
+# Now our data does not have NA's
+colSums(is.na(df))
+```
+
+
+### Decision Trees
+
+```{r}
+#Select only certain columns: RISKS, EALS
+df_risks <- df %>% select(ends_with('RISKS'))
+df_eals <- df %>% select(ends_with('EALS'))
+df_risk <- cbind(Total=df$RISK_SCORE, df_risks)
+df_risk
+```
+
+
+
+```{r}
+# Data Split
+trainrows <- sample(rownames(df_risk), dim(df_risk)[1]*0.75)
+train <- df_risk[trainrows, ]
+testrows <- setdiff(rownames(df_risk), trainrows)
+test <- df_risk[testrows, ]
+```
+
+
+```{r}
+library(rpart)
+m1 <- rpart(
+  formula = Total~.,
+  data=train,
+  method="anova"
+)
+m1
+```
+
+```{r}
+library(rpart.plot)
+rpart.plot(m1)
+```
+
+```{r}
+plotcp(m1)
+```
+
+```{r}
+m2 <- rpart(
+formula = Total ~ .,
+data    = train,
+method  = "anova", 
+control = list(cp = 0, xval = 10)) #10-fold cross validation
+plotcp(m2)
+abline(v = 10, lty = "dashed")
+```
+
+```{r}
+m1$cptable
+```
+```{r}
+hyper_grid <- expand.grid(
+minsplit = seq(5, 20, 1),
+maxdepth = seq(7, 12, 1)
+)
+head(hyper_grid)
+# total number of combinations
+nrow(hyper_grid)
+```
+
+```{r}
+set.seed(123)
+models <- list()
+for (i in 1:nrow(hyper_grid)) {
+# get minsplit, maxdepth values at row i
+minsplit <- hyper_grid$minsplit[i]
+maxdepth <- hyper_grid$maxdepth[i]
+# train a model and store in the list
+models[[i]] <- rpart(
+formula = Total ~ .,
+data    = train,
+method  = "anova",
+control = list(minsplit = minsplit, maxdepth = maxdepth)
+)
+}
+```
+
+```{r}
+get_cp <- function(x) {
+min    <- which.min(x$cptable[, "xerror"])
+cp <- x$cptable[min, "CP"] 
+}
+# function to get minimum error
+get_min_error <- function(x) {
+min    <- which.min(x$cptable[, "xerror"])
+xerror <- x$cptable[min, "xerror"] 
+}
+hyper_grid %>%
+mutate(
+cp    = purrr::map_dbl(models, get_cp),
+error = purrr::map_dbl(models, get_min_error)
+) %>%
+arrange(error) %>%
+top_n(-5, wt = error)
+```
+
+```{r}
+set.seed(123)
+library(rsample)
+library(ipred)
+library(caret)
+library(lattice)
+optimal_tree <- rpart(
+formula = Total ~ .,
+data    = train,
+method  = "anova",
+control = list(minsplit = 8, maxdepth = 8, cp = 0.01)
+)
+pred <- predict(optimal_tree, newdata = test)
+RMSE(pred = pred, obs = test$Total)
+```
+
+# The final RMSE is 3.73 which suggests that on average, our predicted total risk scores are about 3.17 off from the actual risk scores.
+
+
+# Random Forest
+
+```{r}
+library(rsample)
+library(randomForest)
+library(caret)
+```
+
+```{r}
+set.seed(123)
+
+rf1 <- randomForest(formula=Total~.,
+                    data=train
+                    )
+rf1
+```
+```{r}
+plot(rf1)
+```
+```{r}
+which.min(rf1$mse)
+sqrt(rf1$mse[which.min(rf1$mse)])
+```
+
+```{r}
+set.seed(123)
+valid_split <- initial_split(train, .8)
+# training data
+train_v2 <- analysis(valid_split)
+# validation data
+df_valid <- assessment(valid_split)
+x_test <- df_valid[setdiff(names(df_valid), "Total")]
+y_test <- df_valid$Total
+rf_oob_comp <- randomForest(
+formula = Total ~ .,
+data    = train_v2,
+xtest = x_test,
+ytest = y_test
+)
+```
+
+
+```{r}
+# extract OOB & validation errors
+oob <- sqrt(rf_oob_comp$mse)
+validation <- sqrt(rf_oob_comp$test$mse)
+# compare error rates
+tibble::tibble(
+`Out of Bag Error` = oob,
+`Test error` = validation,
+ntrees = 1:rf_oob_comp$ntree
+) %>%
+gather(Metric, RMSE, -ntrees) %>%
+ggplot(aes(ntrees, RMSE, color = Metric)) +
+geom_line() +
+scale_y_continuous(labels = scales::dollar) +
+xlab("Number of trees")
+```
+
+```{r}
+features <- setdiff(names(train), "Total")
+set.seed(123)
+m2 <- tuneRF(
+x          = train[features],
+y          = train$Total,
+ntreeTry = 500,
+mtryStart = 5,
+stepFactor = 1.5,
+improve    = 0.01,
+trace      = FALSE      # to not show real-time progress 
+)
+```
+
+```{r}
+system.time(
+df_randomForest <- randomForest(
+formula = Total ~ ., 
+data    = train, 
+ntree = 500,
+mtry = floor(length(features) / 3)
+))
+```
+
+```{r}
+library(ranger)
+system.time(
+df_ranger <- ranger(
+formula   = Total ~ ., 
+data      = train, 
+num.trees = 500,
+mtry = floor(length(features) / 3)
+))
+```
+
+
+
+```{r}
+# hyperparameter grid search
+hyper_grid <- expand.grid(
+mtry = seq(4, 10, by = 2),
+node_size = seq(3, 9, by = 2), #minimum no. of samples in the terminal nodes
+sampe_size = c(.55, .632, .70, .80), #size of samples to train on
+OOB_RMSE   = 0
+)
+# total number of combinations
+nrow(hyper_grid)
+```
+
+```{r}
+library(ranger)
+for(i in 1:nrow(hyper_grid)) {
+#train model
+model <- ranger(
+formula         = Total ~ ., 
+data              = train, 
+num.trees = 500,
+mtry = hyper_grid$mtry[i],
+min.node.size = hyper_grid$node_size[i],
+sample.fraction = hyper_grid$sampe_size[i],
+seed            = 123)
+hyper_grid$OOB_RMSE[i] <- sqrt(model$prediction.error) #add OOB error to grid
+}
+hyper_grid %>% 
+dplyr::arrange(OOB_RMSE) %>%
+head(10)
+```
+
+```{r}
+library(caret)
+one_hot <- dummyVars(~ ., train, fullRank = FALSE)
+train_hot <- predict(one_hot, train) %>% as.data.frame()
+#names(train) <- make.names(names(train), allow_ = 
+#FALSE)
+# hyperparameter grid search --> same as above but with increased mtry values
+hyper_grid_2 <- expand.grid(
+mtry = seq(10, 100, by = 20),
+node_size = seq(3, 9, by = 2),
+sampe_size = c(.55, .632, .70, .80),
+OOB_RMSE  = 0
+)
+```
+
+```{r}
+# perform grid search
+for(i in 1:nrow(hyper_grid)) {
+# train model
+model <- ranger(
+formula         = Total ~ ., 
+data            = train, 
+num.trees = 500,
+mtry = hyper_grid$mtry[i],
+min.node.size = hyper_grid$node_size[i],
+sample.fraction = hyper_grid$sampe_size[i],
+seed            = 123)
+# add OOB error to grid
+hyper_grid$OOB_RMSE[i] <- sqrt(model$prediction.error)
+}
+hyper_grid %>% 
+dplyr::arrange(OOB_RMSE) %>%
+head(10)
+```
+
+```{r}
+OOB_RMSE <- vector(mode = "numeric", length = 100)
+for(i in seq_along(OOB_RMSE)) {
+optimal_ranger <- ranger(
+formula         = Total ~ ., 
+data            = train, 
+num.trees = 500,
+mtry = 10,
+min.node.size = 7,
+sample.fraction = .8,
+importance      = 'impurity')
+OOB_RMSE[i] <- sqrt(optimal_ranger$prediction.error)}
+hist(OOB_RMSE, breaks = 20)
+```
+
+
+
+```{r}
+library(broom)
+optimal_ranger$variable.importance %>% 
+tidy() %>%
+dplyr::arrange(desc(x)) %>%
+dplyr::top_n(25) %>%
+ggplot(aes(reorder(names, x), x)) +
+geom_col() +
+coord_flip() +
+ggtitle("Top 25 important variables")
+```
+
+- Our root mean squared error, RMSE, is 1.80 which suggests that on average, our predicted total risk scores are about 1.80 off from the actual risk scores. 
+- This number is lower than our decision tree results, which implies higher accuracy. 
+- From the chart above, we can observe that the top four important predictors are river flood, earthquake, tornado, & lightning. 
+
+```{r}
+set.seed(123)
+library(randomForest)
+pred_randomForest <- predict(df_randomForest, test)
+head(pred_randomForest)
+RMSE(pred=pred_randomForest, obs=test$Total)
+
+```
+
+
+### Clustering Analysis
+
+
+```{r}
+library(tidyverse) # data manipulation
+library(cluster) # clustering algorithms
+library(factoextra) # clustering algorithms & visualization
+library(ggplot2) 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---------------------------------------------------------------------------
+DISREGARD BELOW THIS SECTION - Initial modeling WIP
+---------------------------------------------------------------------------
+
+
+
+
+```{r}
+# Base cols
+df_base <- df[,c(1:41)]
+
+# Filter Out only risk scores cols
+df_risks <- df %>% select(ends_with('RISKS'))
+df_eals <- df %>% select(ends_with('EALS'))
+df_risks
+```
+
+```{r}
+df_r <- df %>% select(RISK_SCORE)
+```
+
+```{r}
+df_m1 <- cbind(df_risks, df_eals, df_r)
+df_m1
+```
+
+```{r}
+m1 <- lm(RISK_SCORE ~ ., data=df_m1)
+summary(m1)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Water Shortage - Drought & Heat Wave
+
+```{r}
+df_base <- df[,c(1:18)]
+df_drgt <- df %>% select(starts_with('DRGT'))
+df_hwav <- df %>% select(starts_with('HWAV'))
+df_sun <- cbind(df_base, df_drgt, df_hwav)
+df_sun
+```
+
+
+
+### Social Vulnerability - Protect & prevent vulnerable communities
+
+```{r}
+df_vulner <- df %>% select(starts_with('SOVI'))
+df_vulner_1 <- cbind(df_base, df_vulner)
+df_vulner_1
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

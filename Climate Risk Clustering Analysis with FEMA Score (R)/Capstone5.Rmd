@@ -1,0 +1,641 @@
+---
+title: "Climate Change Final Model Code"
+author: "Team 8, Johann Idsellis, Tom Kim, Ted Skowronski, Connor Upchurch, Blair Zuo"
+date: "12/15/2022"
+output: html_document
+---
+
+## Setup
+```{r setup, include=FALSE}
+# Load packages used in this session of R
+
+library(h2o)
+library(tidyverse)
+library(knitr)
+library(dplyr)
+library(ggplot2)
+library(forecast)
+library(scales)
+library(gridExtra)
+library(gridtext)
+library(tseries)
+library(ggfortify)
+library(lmtest)
+library(lubridate)
+library(car)
+library(skedastic)
+library(lmtest)
+library(caret)
+library(rsample)
+library(moments)
+library(dummies)
+library(sandwich)
+library(MLmetrics)
+library(jtools)
+
+
+# As needed, set path to folder where data is located.
+opts_knit$set(root.dir = "C:/Users/jidse/OneDrive/Documents/Personal/Georgetown/Classes/Capstone")
+```
+
+
+```{r tidy = FALSE}
+data = read.csv("Data/NRI_Table_Counties_Clean.csv")
+```
+
+```{r tidy = FALSE}
+data1= data
+data1 = data1[,-c(!data1$X)]
+```
+
+```{r tidy = FALSE}
+colSums(is.na(data1))
+```
+
+```{r tidy = FALSE}
+#data1 = data1 %>% select (-c(ERQK_EVNTS:ERQK_RISKR))
+#data1 = data1 %>% select (-c(TSUN_EVNTS:TSUN_RISKR))
+#data1 = data1 %>% select (-c(VLCN_EVNTS:VLCN_RISKR))
+```
+
+```{r tidy = FALSE}
+colSums(is.na(data1))
+```
+
+### Data Cleaning
+
+#### Check for Missing Values
+
+```{r}
+#In case you have NA character values, first run
+data1.1 = data1
+data1.1[data1.1=='NA'] <- NA
+
+# Find NA's for each column
+colSums(is.na(data1.1))
+```
+
+```{r}
+# Replace columns with 0 where NA > 2K
+df_nalarge <- data1.1 %>% select(where(~ sum(is.na(.))> 500))
+df_nalarge1 <- df_nalarge %>% 
+ mutate_all(~replace(., is.na(.), 0))
+df_nalarge1
+```
+
+```{r}
+# Replace columns with median where NA < 2K
+df_nasmall <- data1.1 %>% select(where(~ sum(is.na(.))< 500 & 
+                                    sum(is.na(.))> 0))
+df_nasmall
+df_nasmall1 <- df_nasmall %>% mutate_if(is.numeric, function(x) ifelse(is.na(x), median(x, na.rm = TRUE)-sd(x, na.rm = TRUE), x))
+df_nasmall1
+```
+
+```{r}
+# Now that we have two subsets, we can remove all cols with NA & cbind the 2 subsets for complete data
+# Remove columns where contains NA
+
+data1.1 <- data1.1[, colSums(is.na(data1.1))==0]
+
+```
+
+```{r}
+# Cbind two subsets
+data1.1 <- cbind(data1.1, df_nalarge1, df_nasmall1)
+data1.1
+```
+
+```{r}
+# Now our data does not have NA's
+colSums(is.na(data1.1))
+```
+
+```{r}
+data2 = data1.1
+```
+
+### Cluster Model
+```{r}
+# Load packages used in this session of R
+library(readxl)
+library(h2o)
+library(tidyverse)
+library(knitr)
+library(dplyr)
+library(ggplot2)
+library(caret)
+library(rsample)
+library(car)
+library(class)
+library(rmarkdown)
+library(ROCR)
+library(e1071)
+library(rminer)
+library(fastDummies)
+library(e1071)
+library(Amelia)
+library(Rcpp)
+library(GGally)
+library(factoextra)
+library(corrplot)
+library(nFactors)
+library(psych)
+library(FactoMineR)
+library(cluster)
+library(purrr)
+library(NbClust)
+library(clValid)
+library(data.table)
+```
+
+### Data Set
+```{r}
+train2 = data2 %>%
+  select(AVLN_RISKS, CFLD_RISKS, CWAV_RISKS, DRGT_RISKS, HAIL_RISKS, HWAV_RISKS, HRCN_RISKS, ISTM_RISKS, LNDS_RISKS, LTNG_RISKS, RFLD_RISKS, SWND_RISKS, TRND_RISKS, WFIR_RISKS, WNTW_RISKS)
+```
+
+```{r}
+train2.1 = data2 %>%
+  select(NRI_ID, COUNTY, STATE, POPULATION, RISK_SCORE, SOVI_SCORE, RESL_SCORE, EAL_VALT, EAL_VALP, EAL_VALPE, EAL_VALB, EAL_VALA, AVLN_AFREQ, AVLN_RISKS, AVLN_EALT, CFLD_AFREQ, CFLD_EALT, CFLD_RISKS, CWAV_AFREQ, CWAV_EALT, CWAV_RISKS, DRGT_AFREQ, DRGT_EALT, DRGT_RISKS, ERQK_AFREQ, ERQK_EALT,ERQK_RISKS, HAIL_AFREQ, HAIL_EALT, HAIL_RISKS, HWAV_AFREQ, HWAV_EALT, HWAV_RISKS, HRCN_AFREQ, HRCN_EALT, HRCN_RISKS, ISTM_AFREQ, ISTM_EALT, ISTM_RISKS, LNDS_AFREQ, LNDS_EALT, LNDS_RISKS, LTNG_AFREQ, LTNG_EALT, LTNG_RISKS, RFLD_AFREQ, RFLD_EALT , RFLD_RISKS, SWND_AFREQ, SWND_EALT, SWND_RISKS, TRND_AFREQ, TRND_EALT, TRND_RISKS, TSUN_AFREQ, TSUN_EALT, TSUN_RISKS, VLCN_AFREQ, VLCN_EALT, VLCN_RISKS, WFIR_AFREQ, WFIR_EALT, WFIR_RISKS, WNTW_AFREQ, WNTW_EALT, WNTW_RISKS)
+```
+
+### Check for Correlation
+```{r tidy = FALSE}
+correlation = cor(train2)
+correlation
+```
+
+### Correlation Graph
+```{r}
+ggcorr(train2, method = c("all.obs", "spearman"))
+```
+
+### PCA principal component analysis
+```{r tidy = FALSE}
+PCA = prcomp(train2, scale. = TRUE)
+PCA
+```
+
+#### Get Eigenvalues
+```{r tidy = FALSE}
+eig.val = get_eigenvalue(PCA)
+eig.val
+```
+
+#### Screeplot
+```{r tidy = FALSE}
+fviz_eig(PCA, addlabels = TRUE)
+```
+
+#### Calculate variation for each PC
+```{r tidy = FALSE}
+pca_var <- PCA$sdev^2
+pca_var_perc <- round(pca_var/sum(pca_var) * 100, 1)
+barplot(pca_var_perc, main = "Variation Plot", xlab = "PCs", ylab = "Percentage Variance", ylim = c(0, 100))
+```
+
+### Clustering with Principal Components
+```{r tidy = FALSE}
+# K-means with PCA generated from TD3 dataset
+# 1. Run PCA without ID and brand variable
+PCA
+fviz_eig(PCA, addlabels = TRUE)
+
+# Get eigenvalues
+eig.val
+
+# Combine PCA2 with original data
+pcs = as.data.frame(PCA$x)
+combdata = cbind(train2, pcs)
+
+head(combdata,10)
+
+# Scaling the PCAs
+pcavar = c("PC1", "PC2")
+
+#c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10", "PC11", "PC12", "PC13", "PC14", "PC15", "PC16", "PC17", "PC18", "PC19", "PC20", "PC21", "PC22", "PC23", "PC24")#
+
+mypca = scale(combdata[pcavar])
+
+# kmeans clustering (randomly start with 3 clusters)
+kpca = kmeans(mypca, centers = 3, nstart = 25)
+
+# Print the results
+kpca
+
+# Visualize the clusters
+fviz_cluster(kpca, data = mypca)
+
+# Lets get the elbow method for clusters
+set.seed(123)
+fviz_nbclust(mypca, kmeans, method = "wss")
+
+# Compute average Silhouette
+fviz_nbclust(mypca, kmeans, method = "silhouette")
+```
+### Determining Optimal Number of Clusters
+```{r tidy = FALSE}
+# Function to compute total within-cluster sum of square
+wss = function(k) {
+   kmeans(mypca, k, nstart = 25)$tot.withinss
+}
+
+# Compute and plot wss for k = 1 to k = 15
+k.values = 1:15
+
+# Extract wss for 1-15 clusters
+wss_values = map_dbl(k.values, wss)
+
+plot(k.values, wss_values, 
+     type = "b", pch = 19, frame = FALSE,
+     xlab = "Number of clusters K",
+     ylab = "Total within-clusters sum of squares")
+
+# Lets get the elbow method for clusters
+set.seed(123)
+fviz_nbclust(mypca, kmeans, method = "wss")
+```
+
+### Average Silhoutee for Optimal Number of Clusters
+```{r tidy = FALSE}
+# Compute average Silhoute
+fviz_nbclust(mypca, kmeans, method = "silhouette")
+
+sile = silhouette(kpca$cluster, dist(mypca))
+fviz_silhouette(sile)
+```
+
+### Final Clusters
+```{r tidy = FALSE}
+# 3 cluster solution
+# Compute k-means clustering with k = 3
+set.seed(123)
+kf3 = kmeans(mypca, 3, nstart = 25)
+print(kf3)
+
+fviz_cluster(kf3, data = mypca)
+
+#Silhouette
+sile3 = silhouette(kf3$cluster, dist(mypca))
+fviz_silhouette(sile3)
+```
+
+### Final Clusters
+```{r tidy = FALSE}
+# 7 cluster solution
+# Compute k-means clustering with k = 7
+set.seed(123)
+kf7 = kmeans(mypca, 7, nstart = 25)
+print(kf7)
+
+fviz_cluster(kf7, data = mypca)
+
+#Silhouette
+sile7 = silhouette(kf7$cluster, dist(mypca))
+fviz_silhouette(sile7)
+```
+
+```{r tidy = FALSE}
+# 10 cluster solution
+# Compute k-means clustering with k = 10
+set.seed(123)
+kf10 = kmeans(mypca, 10, nstart = 25)
+print(kf10)
+
+fviz_cluster(kf10, data = mypca)
+
+#Silhouette
+sile10 = silhouette(kf10$cluster, dist(mypca))
+fviz_silhouette(sile10)
+```
+
+#### Extracting Cluster
+
+#### kf3
+```{r tidy = FALSE}
+# Extracting clusters into original data
+kf3clus = cbind(train2,cluster = kf3$cluster)
+head(kf3clus)
+
+cluster3df = cbind(train2.1,cluster = kf3$cluster)
+head(cluster3df)
+
+kf3clus %>%
+  count(cluster)
+
+# means of continuous variables
+agg3 = aggregate (x = kf3clus[1:16], 
+           by = list(kf3clus$cluster),
+           FUN = mean)
+agg3
+
+clus3df = aggregate (x = cluster3df[4:62], 
+           by = list(kf3clus$cluster),
+           FUN = mean)
+clus3df
+
+# melt the data frame for plotting
+data.m3 = melt(agg3, id.vars='Group.1')
+data.m3
+
+# plot everything
+ggplot(data.m3, aes(Group.1, value)) +   
+  geom_bar(aes(fill = variable), position = "dodge", stat="identity")
+```
+
+#### kf7
+```{r tidy = FALSE}
+# Extracting clusters into original data
+train2.2 = train2
+train2.2$ERQK_RISKS = data2$ERQK_RISKS
+train2.2$TSUN_RISKS = data2$TSUN_RISKS
+train2.2$VLCN_RISKS = data2$VLCN_RISKS
+
+kf7clus = cbind(train2.2,cluster = kf7$cluster)
+head(kf7clus)
+
+cluster7df = cbind(train2.1,cluster = kf7$cluster)
+head(cluster7df)
+
+
+kf7clus %>%
+  count(cluster)
+
+# means of continuous variables
+agg7 = aggregate (x = kf7clus[1:19], 
+           by = list(kf7clus$cluster),
+           FUN = mean)
+agg7
+
+clus7df = aggregate (x = cluster7df[4:62], 
+           by = list(kf7clus$cluster),
+           FUN = mean)
+clus7df
+
+# melt the data frame for plotting
+data.m7 = melt(agg7, id.vars='Group.1')
+data.m7
+
+# plot everything
+ggplot(data.m7, aes(Group.1, value)) +   
+  geom_bar(aes(fill = variable), position = "dodge", stat="identity")
+```
+```{r}
+cluster7df %>%
+  group_by(cluster) %>%
+  arrange(desc(RISK_SCORE))%>%
+  summarise(RISK_SCORE, COUNTY, STATE)%>%
+  slice(1:10)
+```
+
+```{r}
+Map1 = cluster7df%>%
+  group_by(STATE)%>%
+  arrange(COUNTY)%>%
+  summarise(Region = NRI_ID, COUNTY, Value = cluster)
+Map1
+Map1$Risk = ifelse(Map1$Value == 7, 4, ifelse(Map1$Value == 3, 3,ifelse(Map1$Value == 1,3,ifelse(Map1$Value==2,2,ifelse(Map1$Value == 4,2,1))) ))
+Map1$Region<-as.numeric(gsub(".*?([0-9]+).*", "\\1", Map1$Region))
+
+Map2 = Map1
+Map2$region = Map1$Region
+Map2$value = Map1$Risk
+Map2
+library(choroplethr)
+library(choroplethrMaps)
+county_choropleth(Map2,
+                  title = "Natural Disaster Risk Map 2021",
+                  legend = "Risk Value",
+                  num_colors = 1)
+
+
+
+```
+
+
+#### kf10
+```{r tidy = FALSE}
+# Extracting clusters into original data
+kf10clus = cbind(train2,cluster = kf10$cluster)
+head(kf10clus)
+
+cluster10df = cbind(train2.1,cluster = kf10$cluster)
+head(cluster10df)
+
+kf10clus %>%
+  count(cluster)
+
+# means of continuous variables
+agg10 = aggregate (x = kf10clus[1:16], 
+           by = list(kf10clus$cluster),
+           FUN = mean)
+agg10
+
+clus10df = aggregate (x = cluster10df[4:62], 
+           by = list(kf10clus$cluster),
+           FUN = mean)
+clus10df
+
+# melt the data frame for plotting
+data.m10 = melt(agg10, id.vars='Group.1')
+data.m10
+
+# plot everything
+ggplot(data.m10, aes(Group.1, value)) +   
+  geom_bar(aes(fill = variable), position = "dodge", stat="identity")
+```
+
+### K - Medoids(PAM)
+```{r tidy = FALSE}
+# K-medoids method (Partitioning Around Medoids - PAM) in cluster package (cluster center in PAM is determined by an actual observation instead of centroid in k-means) 
+# Can be used with any distance matrix and any data type
+# For PAM optimal number of clusters detected by using Silhouette method
+
+fviz_nbclust(mypca, pam, method = "silhouette")
+```
+
+#### K-Medoids (PAM) using Distance  matrix
+### Computing Distance Matrix
+```{r tidy = FALSE}
+# use get_dist for computing distance matrix between observations (default is Euclidean distance)
+distance = get_dist(train2)
+fviz_dist(distance, gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07"))
+```
+```{r tidy = FALSE}
+# Compute silhouette for many k using PAM using Distance Matrix
+sil_width = c(NA)
+for (i in 2:10) { 
+   pam_fit = pam(distance, 
+                 diss = TRUE,
+                 k = i)
+   sil_width[i] = pam_fit$silinfo$avg.width
+}
+
+# Plot silhouette width (higher is better)
+plot(1:10, sil_width,
+     xlab = "Number of clusters",
+     ylab = "Silhoette Width")
+     lines(1:10, sil_width)
+     
+#Cluster
+pam = eclust(mypca, "pam", k = 4,
+             hc_metric = "euclidean") #plotting of clusters
+#Alternatively, you can select the following if using distance matrix:
+pam_fit = pam(distance, diss = TRUE, k = 4)
+
+#Silhouette
+silepam = silhouette(pam$cluster, dist(mypca))
+fviz_silhouette(silepam)
+```
+```{r tidy = FALSE}
+# PAM Clustering
+pamclus = pam(mypca, 4)
+print (pamclus)
+
+# Adding cluster to original data
+pamdata = cbind(mypca, cluster = pamclus$cluster)
+head(pamdata)
+```
+
+#### Pam4
+```{r tidy = FALSE}
+# Extracting clusters into original data
+pamcluster4 = cbind(train2,cluster = pamclus$cluster)
+head(pamcluster4)
+
+pamcluster4 %>%
+  count(cluster)
+
+# means of continuous variables
+aggpam4 = aggregate (x = pamcluster4[1:16], 
+           by = list(pamcluster4$cluster),
+           FUN = mean)
+
+aggpam4
+
+# melt the data frame for plotting
+data.mpam4 = melt((aggpam4[,-20]), id.vars='Group.1')
+data.mpam4
+
+# plot everything
+ggplot(data.mpam4, aes(Group.1, value)) +   
+  geom_bar(aes(fill = variable), position = "dodge", stat="identity")
+```
+
+#### 5 Clusters
+```{r tidy = FALSE}
+# Cluster
+pam5 = eclust(mypca, "pam", k = 5,
+             hc_metric = "euclidean") #plotting of clusters
+#Silhouette
+silepam5 = silhouette(pam5$cluster, dist(mypca))
+fviz_silhouette(silepam5)
+
+# PAM Clustering
+pamclus5 = pam(mypca, 5)
+print (pamclus5)
+
+# Adding cluster to original data
+pamdata5 = cbind(mypca, cluster = pamclus5$cluster)
+head(pamdata5)
+```
+
+#### Pam5
+```{r tidy = FALSE}
+# Extracting clusters into original data
+pamcluster5 = cbind(train2,cluster = pamclus5$cluster)
+head(pamcluster5)
+
+pamcluster5 %>%
+  count(cluster)
+
+# means of continuous variables
+aggpam5 = aggregate (x = pamcluster5[1:16], 
+           by = list(pamcluster5$cluster),
+           FUN = mean)
+
+aggpam5
+
+# melt the data frame for plotting
+data.mpam5 = melt((aggpam5[,-20]), id.vars='Group.1')
+data.mpam5
+
+# plot everything
+ggplot(data.mpam5, aes(Group.1, value)) +   
+  geom_bar(aes(fill = variable), position = "dodge", stat="identity")
+```
+
+#### 7 Clusters
+```{r tidy = FALSE}
+# Cluster
+pam7 = eclust(mypca, "pam", k = 7,
+             hc_metric = "euclidean") #plotting of clusters
+
+#Silhouette
+silepam7 = silhouette(pam7$cluster, dist(mypca))
+fviz_silhouette(silepam7)
+
+# PAM Clustering
+pamclus7 = pam(mypca, 7)
+print (pamclus7)
+
+# Adding cluster to original data
+pamdata7 = cbind(mypca, cluster = pamclus7$cluster)
+head(pamdata7)
+```
+
+#### Pam7
+```{r tidy = FALSE}
+# Extracting clusters into original data
+pamcluster7 = cbind(train2,cluster = pamclus7$cluster)
+head(pamcluster7)
+
+pamcluster7 %>%
+  count(cluster)
+
+# means of continuous variables
+aggpam7 = aggregate (x = pamcluster7[1:16], 
+           by = list(pamcluster7$cluster),
+           FUN = mean)
+
+aggpam7
+
+# melt the data frame for plotting
+data.mpam7 = melt((aggpam7[,-20]), id.vars='Group.1')
+data.mpam7
+
+# plot everything
+ggplot(data.mpam7, aes(Group.1, value)) +   
+  geom_bar(aes(fill = variable), position = "dodge", stat="identity")
+
+kf7clus = cbind(train2.2,cluster = kf7$cluster)
+head(kf7clus)
+
+cluster7df = cbind(train2.1,cluster = kf7$cluster)
+head(cluster7df)
+
+
+kf7clus %>%
+  count(cluster)
+
+# means of continuous variables
+agg7 = aggregate (x = kf7clus[1:19], 
+           by = list(kf7clus$cluster),
+           FUN = mean)
+agg7
+
+clus7df = aggregate (x = cluster7df[4:62], 
+           by = list(kf7clus$cluster),
+           FUN = mean)
+clus7df
+
+# melt the data frame for plotting
+data.m7 = melt(agg7, id.vars='Group.1')
+data.m7
+
+# plot everything
+ggplot(data.m7, aes(Group.1, value)) +   
+  geom_bar(aes(fill = variable), position = "dodge", stat="identity")
+
+```
